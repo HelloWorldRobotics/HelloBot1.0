@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+	
+  <!-- Teleop twist keyboard -->
+  <node name="hellobot_teleop" pkg="HYJ_DiPan_Package" type="hellobot1.0_teleop_twist_keyboard.py" output="screen">
+  </node>
+  
+</launch>

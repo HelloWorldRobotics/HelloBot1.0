@@ -1,0 +1,18 @@
+<package>
+  <description brief="HYJ_DiPan_Package">
+
+     HYJ_DiPan_Package
+
+  </description>
+  <author>szsp</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/HYJ_DiPan_Package</url>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <depend package="tf"/>
+  <depend package="nav_msgs"/>
+
+</package>
+
+

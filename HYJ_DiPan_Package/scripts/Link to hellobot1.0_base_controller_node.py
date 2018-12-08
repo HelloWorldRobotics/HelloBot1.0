@@ -1,0 +1,1 @@
+/home/nvidia/Autoware/ros/src/HelloBot1.0/HYJ_DiPan_Package/scripts/hellobot1.0_base_controller_node.py

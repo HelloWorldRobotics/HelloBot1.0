@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Robot base control-->
+  <arg name="topic_twist_stamped" default=""/>
+  <node name="hellobot_base" pkg="HYJ_DiPan_Package" type="hellobot1.0_base_controller_node.py" output="screen">
+  </node>
+  <node pkg="topic_tools" type="relay" name="relay_cmd_vel" args="$(arg topic_twist_stamped) /twist_cmd"/>
+</launch>

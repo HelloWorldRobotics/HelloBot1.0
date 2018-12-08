@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<launch>
+	
+	<!-- args for baselink_to_localizer -->
+	<arg name="x" default="0.25"/>
+	<arg name="y" default="0.0"/>
+	<arg name="z" default="0.5"/>
+	<arg name="yaw" default="0.0"/>
+	<arg name="pitch" default="0.0"/>
+	<arg name="roll" default="0.0"/>
+	<arg name="frame_id" default="base_link"/>
+	<arg name="child_frame_id" default="velodyne"/>
+	<arg name="period_in_ms" default="10"/>
+	
+	<!--args for waypoint_loader -->
+	<arg name="multi_lane_csv" default="/home/nvidia/.autoware/hellobot_waypoint/saved_waypoints-park-night-test.csv" />
+	<arg name="disable_decision_maker" default="true" />
+	
+<!-- =============================================================================================================================================================================== -->
+	
+	<!-- Point Cloud -->
+	<node pkg="map_file" type="points_map_loader" name="points_map_loader" args="noupdate /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_0.pcd /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_1.pcd /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_2.pcd /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_3.pcd /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_4.pcd">
+	</node>
+	
+	<!-- node for tf_world_to_map -->
+	<node pkg="tf"  type="static_transform_publisher" name="world_to_map" args="0 0 0 0 0 0 /world /map 10" />
+	
+	<!-- node for baselink_to_localizer -->
+	<node pkg="tf" type="static_transform_publisher" name="base_link_to_localizer" args="$(arg x) $(arg y) $(arg z) $(arg yaw) $(arg pitch) $(arg roll) $(arg frame_id) $(arg child_frame_id) $(arg period_in_ms)"/>
+	
+	<!-- node for vehicle model-->
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+	
+	<!--node for waypoint loader -->
+	<node pkg="waypoint_maker" type="waypoint_loader" name="waypoint_loader" output="screen" args="$(arg multi_lane_csv)">
+		<param name="disable_decision_maker" value="$(arg disable_decision_maker)" />
+    </node>
+    
+    <node pkg="waypoint_maker" type="waypoint_marker_publisher" name="waypoint_marker_publisher" />
+	
+
+</launch>

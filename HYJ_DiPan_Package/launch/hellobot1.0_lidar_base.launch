@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Robot base control-->
+  <node pkg="tf" type="static_transform_publisher" name="base_to_stereo" args="0.43 0 0.585 0 0 0 1 /base_link /mynteye_link 10" />
+  
+  <node name="hellobot_base" pkg="HYJ_DiPan_Package" type="hellobot1.0_base_controller_odom_pub_node.py" output="screen">
+  </node>
+  
+  <!-- TwistStamped to Twist Converter-->
+  <node name="twiststamped_to_twist" pkg="HYJ_DiPan_Package" type="hellobot1.0_twiststamped_to_twist.py" output="screen">
+  </node>
+
+  <!--Command Velocity-->
+  <node pkg="topic_tools" type="relay" name="relay_cmd_vel" args="/cmd_vel /planner/cmd_vel"/>
+
+  <!--LS Lidar C16-->
+  <node pkg="lslidar_c16_driver" type="lslidar_c16_driver_node" name="lslidar_c16_driver_node" output="screen">
+    <!--AUTOWARE-->
+    <param name="frame_id" value="velodyne"/>
+    <!--AUTOWARE-->
+    <param name="device_ip" value="192.168.1.200"/>
+    <param name="device_port" value="2368"/>
+  </node>
+
+  <node pkg="lslidar_c16_decoder" type="lslidar_c16_decoder_node" name="lslidar_c16_decoder_node" output="screen">
+    <!--AUTOWARE-->
+    <param name="child_frame_id" value="velodyne"/>
+    <!--AUTOWARE-->
+    <!--param name="child_frame_id" value="laser"/-->
+    <param name="point_num" value="2000"/>
+    <param name="angle_disable_min" value="0"/>
+    <param name="angle_disable_max" value="0"/>
+    <param name="min_range" value="0.15"/>
+    <param name="max_range" value="150.0"/>
+    <param name="frequency" value="10.0"/>
+    <param name="publish_point_cloud" value="true"/>
+  </node>
+
+  <!--node name="rviz" pkg="rviz" type="rviz" args="-d $(find lslidar_c16_decoder)/launch/lslidar_c16.rviz" output="screen"/-->
+
+</launch>

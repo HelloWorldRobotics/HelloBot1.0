@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<launch>
+	<!--launch point_map and vector_map-->
+	<include file="/home/nvidia/.autoware/data/tf/tf.launch"/>
+	<node pkg="map_file" type="points_map_loader" name="points_map_loader" args="noupdate /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_0.pcd /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_1.pcd /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_2.pcd /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_3.pcd /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_4.pcd"/>
+	<node pkg="map_file" type="vector_map_loader" name="vector_map_loader" args="/home/nvidia/.autoware/hellobot_adas_map/2018.10.05/park-lane-test-2.0/dtlane.csv /home/nvidia/.autoware/hellobot_adas_map/2018.10.05/park-lane-test-2.0/idx.csv /home/nvidia/.autoware/hellobot_adas_map/2018.10.05/park-lane-test-2.0/lane.csv /home/nvidia/.autoware/hellobot_adas_map/2018.10.05/park-lane-test-2.0/node.csv /home/nvidia/.autoware/hellobot_adas_map/2018.10.05/park-lane-test-2.0/point.csv"/>
+	<!-- setting up path parameter -->
+	<arg name="use_openmp" value="false" />
+	<arg name="get_height" value="true" />
+	
+	<!--Setup -->
+	<!--launch base_link to localizer -->
+	<include file="$(find runtime_manager)/scripts/setup_tf.launch">
+		<arg name="x" value="0.5" />
+		<arg name="y" value="0.0" />
+		<arg name="z" value="0.7" />
+		<arg name="yaw" value="0.0" />
+		<arg name="pitch" value="0.0" />
+		<arg name="roll" value="0.0" />
+		<arg name="frame_id" value="/base_link" />
+		<arg name="child_frame_id" value="/velodyne" />
+		<arg name="period_in_ms" value="10"/>
+	</include>
+	<include file="$(find model_publisher)/launch/vehicle_model.launch" />
+		
+	<!-- points downsampler -->
+	<include file="$(find points_downsampler)/launch/points_downsample.launch" />
+	
+	<!--nmea2tfpose -->
+	<!--include file="$(find gnss_localizer)/launch/nmea2tfpose.launch"-->
+	
+	<!--ndt_mathcing-->
+	<include file="$(find lidar_localizer)/launch/ndt_matching.launch">
+		<arg name="get_height" value="$(arg get_height)">
+	
+	<!--launch vel_pose_connect -->
+	<include file="$(find autoware_connector)/launch/vel_pose_connect.launch" />
+		<arg name="sim_mode" default="true" />
+	
+	<!--launch op_global_planner -->
+	<!--include file="$(find op_global_planner)/launch/op_global_planner.launch" /-->
+	<!--node name="set_initial_pose_and_goal" pkg="HYJ_DiPan_Package" type="hellobot1.0_set_initialpose_and_goal.py" -->
+	<!--/node-->
+	<!--launch way_point_follower -->
+	<!--incldue file="$(find waypoint_follower)/launch/wf_simulator.launch" /-->
+	<include file="$(find waypoint_follower)/launch/twist_filter.launch" />
+	
+	<!-- launch op_planner -->
+	<!--include file="$(find op_local_planner)/launch/op_common_params.launch" />
+	<include file="$(find op_local_planner)/launch/op_trajectory_generator.launch" />
+	<include file="$(find op_local_planner)/launch/op_motion_predictor.launch" />
+	<include file="$(find op_local_planner)/launch/op_trajectory_evaluator.launch" />
+	<include file="$(find op_local_planner)/launch/op_behavior_selector.launch" />
+	<node name="set_initial_pose_for_wf_simulator" pkg="HYJ_DiPan_Package" type="hellobot1.0_set_initialpose_for_wf_simulator.py"-->
+	<!--/node-->
+	<!--launch pure puisuit -->
+	<!--include file="$(find waypoint_follower)/launch/pure_pursuit.launch" /-->
+</launch>

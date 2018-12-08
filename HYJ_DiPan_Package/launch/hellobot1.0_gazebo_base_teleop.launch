@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Robot base control-->
+  <!--node pkg="tf" type="static_transform_publisher" name="base_to_stereo" args="0.43 0 0.585 0 0 0 1 /base_link /mynteye_link 10" /-->
+  
+  <node name="hellobot_base" pkg="HYJ_DiPan_Package" type="hellobot1.0_gazebo_base.py" output="screen">
+  </node>
+
+  <!-- Teleop twist keyboard -->
+  <node name="hellobot_teleop" pkg="HYJ_DiPan_Package" type="hellobot1.0_teleop_twist_keyboard.py" output="screen">
+  </node>
+  
+  <!-- TwistStamped to Twist Converter-->
+  <node name="twiststamped_to_twist" pkg="HYJ_DiPan_Package" type="hellobot1.0_twiststamped_to_twist.py" output="screen">
+  </node>
+
+  <!--Command Velocity-->
+  <node pkg="topic_tools" type="relay" name="relay_cmd_vel" args="/cmd_vel /planner/cmd_vel"/>
+
+  <!--node name="rviz" pkg="rviz" type="rviz" args="-d $(find lslidar_c16_decoder)/launch/lslidar_c16.rviz" output="screen"/-->
+
+</launch>

@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<launch>
+	<!-- args for baselink_to_localizer -->
+	<arg name="x" default="0.25"/>
+	<arg name="y" default="0.0"/>
+	<arg name="z" default="0.5"/>
+	<arg name="yaw" default="0.0"/>
+	<arg name="pitch" default="0.0"/>
+	<arg name="roll" default="0.0"/>
+	<arg name="frame_id" default="base_link"/>
+	<arg name="child_frame_id" default="velodyne"/>
+	<arg name="period_in_ms" default="10"/>
+	
+	<!-- args for vehicle model -->
+	<arg name="base_frame" default="/base_link"/>
+	<arg name="topic_name" default="vehicle_model"/>
+	<arg name="offset_x" default="1.2"/>
+	<arg name="offset_y" default="0.0"/>
+	<arg name="offset_z" default="0.0"/>
+	<arg name="offset_roll" default="0.0"/> <!-- degree -->
+	<arg name="offset_pitch" default="0.0"/> <!-- degree -->
+	<arg name="offset_yaw" default="0.0"/> <!-- degree -->
+	<!--arg name="model_path" default="./src/.config/model/default.urdf" /-->
+	<arg name="model_path" default="./src/.config/model/hellobot.urdf" />
+	<arg name="gui" default="False" />
+	<param name="robot_description" textfile="$(arg model_path)" />
+	<param name="use_gui" value="$(arg gui)"/>
+	
+	<!-- args for points_downsample -->
+	<arg name="node_name" default="voxel_grid_filter" />
+	<arg name="points_topic" default="points_raw" />
+	<arg name="output_log" default="false" />
+	<arg name="sync" default="false" />
+	
+	<!-- args for ndt_matching -->
+	<arg name="method_type" default="0" /> <!-- pcl_generic=0, pcl_anh=1, pcl_anh_gpu=2, pcl_openmp=3 -->
+	<arg name="use_gnss" default="0" />
+	<arg name="use_odom" default="false" />
+	<arg name="use_imu" default="false" />
+	<arg name="imu_upside_down" default="false" />
+	<arg name="imu_topic" default="/imu_raw" />
+	<arg name="queue_size" default="1" />
+	<arg name="offset" default="linear" />
+	<arg name="get_height" default="false" />
+	<arg name="use_local_transform" default="false" />
+	<!--arg name="sync" default="false" / -->
+	
+	<!--args for waypoint_loader >
+	<arg name="multi_lane_csv" default="/home/nvidia/.autoware/hellobot_waypoint/saved_waypoints_park_night_test.csv" />
+	<arg name="disable_decision_maker" default="true" /-->
+<!-- =====================================================================================================================================================================-->
+	
+	<!--node for waypoint loader >
+	<node pkg="waypoint_maker" type="waypoint_loader" name="waypoint_loader" output="screen" args="$(arg multi_lane_csv)">
+		<param name="disable_decision_maker" value="$(arg disable_decision_maker)" />
+    </node-->
+    
+    <node pkg="waypoint_maker" type="waypoint_marker_publisher" name="waypoint_marker_publisher" />
+	
+	<!-- Point Cloud -->
+	<node pkg="map_file" type="points_map_loader" name="points_map_loader" args="noupdate /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_0.pcd /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_1.pcd /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_2.pcd /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_3.pcd /home/nvidia/.autoware/hellobot_pcd/2018.09.20/night-test-45m-approximate-mapping/submap_night_4.pcd">
+	</node>
+	
+	<!-- node for tf_world_to_map -->
+	<node pkg="tf"  type="static_transform_publisher" name="world_to_map" args="0 0 0 0 0 0 /world /map 10" />
+	
+	<!--node for baselink_to_localizer -->
+	<node pkg="tf" type="static_transform_publisher" name="base_link_to_localizer" args="$(arg x) $(arg y) $(arg z) $(arg yaw) $(arg pitch) $(arg roll) $(arg frame_id) $(arg child_frame_id) $(arg period_in_ms)"/>
+	
+	<!-- node for vehicle model-->
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+	
+	<!-- node for downsample -->
+	<node pkg="points_downsampler" name="$(arg node_name)" type="$(arg node_name)">
+		<param name="points_topic" value="$(arg points_topic)" />
+		<remap from="/points_raw" to="/sync_drivers/points_raw" if="$(arg sync)" />
+		<param name="output_log" value="$(arg output_log)" />
+	</node>
+	
+    <!-- node for ndt_matching -->
+    <node pkg="lidar_localizer" type="ndt_matching" name="ndt_matching" output="log">
+		<param name="method_type" value="$(arg method_type)" />
+		<param name="use_gnss" value="$(arg use_gnss)" />
+		<param name="use_odom" value="$(arg use_odom)" />
+		<param name="use_imu" value="$(arg use_imu)" />
+		<param name="imu_upside_down" value="$(arg imu_upside_down)" />
+		<param name="imu_topic" value="$(arg imu_topic)" />
+		<param name="queue_size" value="$(arg queue_size)" />
+		<param name="offset" value="$(arg offset)" />
+		<param name="get_height" value="$(arg get_height)" />
+		<param name="use_local_transform" value="$(arg use_local_transform)" />
+		<remap from="/points_raw" to="/sync_drivers/points_raw" if="$(arg sync)" />
+	</node>
+	
+	<!-- node for downsample >
+	<node pkg="points_downsampler" name="$(arg node_name)" type="$(arg node_name)">
+    <param name="points_topic" value="$(arg points_topic)" />
+    <remap from="/points_raw" to="/sync_drivers/points_raw" if="$(arg sync)" />
+    <param name="output_log" value="$(arg output_log)" />
+	</node-->
+	
+	
+</launch>

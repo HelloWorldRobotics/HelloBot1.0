@@ -17,7 +17,7 @@ from geometry_msgs.msg import Quaternion, Twist, Pose
 class Hellobot1_Base_Driver:
 
     const.Wheelbase=0.348                                                      #Wheel base
-    const.EncoderResolution=1200                                               #Encoder ticks per revolution
+    const.EncoderResolution=400                                                #Encoder ticks per revolution
     const.WheelDiameter=0.129                                                  #Wheel diameter
     const.pi=3.14159265358                                                    
     const.PowerRange=255                                                       #PWM power range
@@ -66,11 +66,11 @@ class Hellobot1_Base_Driver:
 
         # Positive = front, Negative = back
         if self.left_encoderInt >=0:
-            self.left_direction_flag = '0C'          
-            self.left_direction      = '00'       
+            self.left_direction_flag  = '0C'          
+            self.left_direction       = '00'       
         else:
-            self.left_direction_flag = '0C'
-            self.left_direction      = '01'
+            self.left_direction_flag  = '0C'
+            self.left_direction       = '01'
 
         if self.right_encoderInt >=0:
             self.right_direction_flag = '0A'
@@ -81,19 +81,19 @@ class Hellobot1_Base_Driver:
         
         self.Left_Direction_Send = Hellobot1_Base_Driver.UpdateWheelDirection%(self.left_direction_flag,self.left_direction)
         self.ser.write(self.Left_Direction_Send.decode('hex'))
-        time.sleep(0.001)
+        time.sleep(0.01)
         #rospy.loginfo("self.Left_Direction_Send=%s",self.Left_Direction_Send)
 
         self.Right_Direction_Send = Hellobot1_Base_Driver.UpdateWheelDirection%(self.right_direction_flag,self.right_direction)
         self.ser.write(self.Right_Direction_Send.decode('hex'))
-        time.sleep(0.001)
+        time.sleep(0.01)
         #rospy.loginfo("self.Right_Direction_Send=%s",self.Right_Direction_Send)
 
         if abs(self.left_encoderInt)>const.PowerRange:
-            self.left_speed_flag  = '0D'
+            self.left_speed_flag   = '0D'
             self.left_speed=(hex(const.PowerRange))[2:]                          
         else:
-            self.left_speed_flag  = '0D'
+            self.left_speed_flag   = '0D'
             self.left_speed=(hex(abs(self.left_encoderInt)))[2:]    
             if len(self.left_speed)==1:
                 self.left_speed='0'+self.left_speed
@@ -108,12 +108,12 @@ class Hellobot1_Base_Driver:
         
         self.Left_Speed_Send = Hellobot1_Base_Driver.UpdateWheelSpeed%(self.left_speed_flag,self.left_speed)
         self.ser.write(self.Left_Speed_Send.decode('hex'))
-        time.sleep(0.001)
+        time.sleep(0.01)
         #rospy.loginfo("self.Left_Speed_Send=%s",self.Left_Speed_Send)
 
         self.Right_Speed_Send = Hellobot1_Base_Driver.UpdateWheelSpeed%(self.right_speed_flag,self.right_speed)
         self.ser.write(self.Right_Speed_Send.decode('hex'))
-        time.sleep(0.001)
+        time.sleep(0.01)
         #rospy.loginfo("self.Right_Speed_Send=%s",self.Right_Speed_Send)
 
         self.ser.flush()
@@ -139,7 +139,7 @@ class Hellobot1_Base_Driver:
 
         self.odomPub = rospy.Publisher('/vehicle/odom', Odometry, queue_size=10)
         self.odomBroadcaster = TransformBroadcaster()                         		#Initialize TF broadcast
-        self.ser.write(Hellobot1_Base_Driver.OdometryEnable.decode('hex'))   		#Enable data transfer
+        #self.ser.write(Hellobot1_Base_Driver.OdometryEnable.decode('hex'))   		#Enable data transfer
 
         Hellobot1_Base_Driver.clock_front=rospy.Time.now()
         Hellobot1_Base_Driver.clock_back=rospy.Time.now()
@@ -149,6 +149,7 @@ class Hellobot1_Base_Driver:
   
             #Receiving wheel direction and speed from STM32
             while self.ser.inWaiting() > 0:
+                #rospy.loginfo("%s",self.ser.read(10))
                 """Hellobot1_Base_Driver.DataInput=self.ser.read(6)
                 if ord(Hellobot1_Base_Driver.DataInput[1]) == 0:
                     #rospy.loginfo("HelloBot1.0 Sending Data to ROS!")

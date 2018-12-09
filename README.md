@@ -1,4 +1,4 @@
-# HelloBot1.0
+# HelloBot1.0 & 2.0
 
 CAN BUS
 

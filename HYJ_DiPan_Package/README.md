@@ -19,7 +19,7 @@ OR
 udevadm info -a -n ttyUSB0
 cd /etc/udev/rules.d
 sudo vim xxxx.rules
-eg. KERNEL=="ttyUSB*", ATTRS{idProduct}=="2303", ATTRS{idVendor}=="067b", ATTRS{devpath}=="3", SYMLINK+="HYJ_DiPan"
+eg. KERNEL=="ttyUSB*", ATTRS{idProduct}=="2303", ATTRS{idVendor}=="067b", ATTRS{devpath}=="2.4", SYMLINK+="hellobot1_base"
 
 #3)安装调试小工具(图形化)	
 

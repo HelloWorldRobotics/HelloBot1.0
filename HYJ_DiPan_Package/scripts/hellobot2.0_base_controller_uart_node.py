@@ -164,17 +164,20 @@ class HelloBot2_Base_Driver:
 		print(type(data))"""
 
             while self.ser.inWaiting() > 0:#返回接收缓存中的字节数
-		HelloBot2_Base_Driver.DataInput = self.ser.readline().split('?')
 		#making sure the values are float numbers
 		try:
+			HelloBot2_Base_Driver.DataInput = self.ser.readline().split('?')
 			v_left_wheel   = float(HelloBot2_Base_Driver.DataInput[1])
 			v_right_wheel  = float(HelloBot2_Base_Driver.DataInput[2])
 		except ValueError:
 			print("NOT A FLOAT, PASS->",HelloBot2_Base_Driver.DataInput[1],HelloBot2_Base_Driver.DataInput[2])
 			break
+		except IndexError:
+			print("LIST INDEX ERROR, PASS->",HelloBot2_Base_Driver.DataInput)
+			break
 
 		#print(isinstance(v_left_wheel, float))
-		print(v_left_wheel,v_right_wheel)
+		#print(v_left_wheel,v_right_wheel)
 		#print(self.is_number(v_left_wheel),self.is_number(v_right_wheel))
                 (vx,vy,vth) = self.velocity_to_odom(v_left_wheel,v_right_wheel)
 		#(vx,vy,vth) = self.velocity_to_odom(0,0)

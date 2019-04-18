@@ -170,10 +170,10 @@ class HelloBot2_Base_Driver:
 			v_left_wheel   = float(HelloBot2_Base_Driver.DataInput[1])
 			v_right_wheel  = float(HelloBot2_Base_Driver.DataInput[2])
 		except ValueError:
-			print("NOT A FLOAT, PASS->",HelloBot2_Base_Driver.DataInput[1],HelloBot2_Base_Driver.DataInput[2])
+			print("NOT A FLOAT, PASS->")
 			break
 		except IndexError:
-			print("LIST INDEX ERROR, PASS->",HelloBot2_Base_Driver.DataInput)
+			print("LIST INDEX ERROR, PASS->")
 			break
 
 		#print(isinstance(v_left_wheel, float))
